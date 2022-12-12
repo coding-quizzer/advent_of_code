@@ -24,14 +24,15 @@ const findKnapsackDuplicates = (pouches) => {
   console.log(knapsackItems);
 
   for (const item of secondPouch) {
+    const itemPriority = findDuplicatePriority(item);
 
-    if (knapsackItems[item] && !duplicates.includes(item)) {
+    if (knapsackItems[item] && !duplicates.includes(itemPriority)) {
       console.log("Item", item)
-      duplicates.push(item);
+      duplicates.push(itemPriority);
     }
   }
 
-  return duplicates;
+  return duplicates.reduce((prev, next) => prev + next);
 
 }
 
@@ -62,6 +63,6 @@ readFile(FILE_PATH, { encoding: 'utf-8' }, (error, data) => {
 
   console.log(compartmentList);
   console.log(allDuplicates);
-  console.log(findDuplicatePriority(firstDuplicates[0]));
+  console.log(allDuplicates.reduce((prev, next) => prev + next));
   // console.log(firstDuplicates);
 });
