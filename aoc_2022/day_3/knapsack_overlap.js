@@ -1,10 +1,36 @@
 const { readFile } = require('fs');
 FILE_PATH = './example_data.txt';
 
-const parseData = (data) => {
-  const knapsackList = data.split('\n');
+const makeDataArray = (data) => {
+  return data.split('\n');
+}
+
+const parseDataHalves = (data) => {
+  const knapsackList = makeDataArray(data);
   const compartmentList = knapsackList.map(knapsack => [knapsack.substring(0, knapsack.length / 2), knapsack.substring(knapsack.length / 2)]);
 
+  return compartmentList;
+}
+
+const parseDataThrees = (data) => {
+  const knapsackList = makeDataArray(data);
+
+  const compartmentList = [];
+  let pocket = [];
+
+  for( const index in knapsackList) {
+    const knapsack = knapsackList[index];
+
+    pocket.push(knapsack);
+
+    if (index % 3 === 2) {
+      compartmentList.push([...pocket])
+      pocket = [];
+    }
+
+  }
+
+  console.log(compartmentList);
   return compartmentList;
 }
 
@@ -34,7 +60,7 @@ const findKnapsackDuplicates = (pouches) => {
     }
   }
 
-  console.log(knapsackItems);
+  // console.log(knapsackItems);
 
   const knapsackItemArray = Object.keys(knapsackItems);
 
@@ -63,13 +89,17 @@ const findAllDuplicates = (knapsackList) => {
 readFile(FILE_PATH, { encoding: 'utf-8' }, (error, data) => {
   if (error) throw error;
 
-  const compartmentList = parseData(data);
+  const halvesCompartmentList = parseDataHalves(data);
 
-  const firstDuplicates = findKnapsackDuplicates(compartmentList[0]);
-  const allDuplicates = findAllDuplicates(compartmentList);
+  console.log(halvesCompartmentList);
+  const allDuplicates = findAllDuplicates(halvesCompartmentList);
 
-  console.log(compartmentList);
-  console.log(allDuplicates);
+  // console.log(allDuplicates);
   console.log(allDuplicates.reduce((prev, next) => prev + next));
   // console.log(firstDuplicates);
+
+  const threesCompartmentList = parseDataThrees(data);
+  const allThreesDuplicates = findAllDuplicates(threesCompartmentList);
+  console.log(allThreesDuplicates);
+  console.log(allThreesDuplicates.reduce((prev, next) => prev + next))
 });
