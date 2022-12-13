@@ -1,6 +1,6 @@
 const { readFile } = require('fs');
 
-const dataStringToArray = (data) => data.split('\n');
+const dataStringToArray = (data) => data.trim().split('\n');
 
 const getPuzzleInput = (filePath, parseData, calculateResult, printInitialArray) => {
 
