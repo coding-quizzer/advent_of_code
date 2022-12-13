@@ -1,7 +1,9 @@
 const { readFile } = require("fs");
+const getPuzzleInput = require('../getInput');
 const FILE_PATH = './data.txt';
 
-const getCaloriesPerElf = (calorieItems) => {
+const getCaloriesPerElf = (dataList) => {
+  const calorieItems = dataList.map((item) => parseInt(item));
   let counter = 0;
   let elfList = [];
   for(const calorieItem of calorieItems) {
@@ -14,6 +16,7 @@ const getCaloriesPerElf = (calorieItems) => {
   }
 
   if(counter) elfList.push(counter);
+
 
   return elfList;
 }
@@ -31,9 +34,12 @@ const getMaxCalories = (caloriesForElves) => {
 
 }
 
+const getMaxCaloriesNumber = (caloriesForElves) => {
+  return getMaxCalories(caloriesForElves).calories
+}
+
 const getMaxThreeCalories = (caloriesPerPerson) => {
   let temp;
-  let minIndex = 0;
   const orderedCaloriesPerPerson = [...caloriesPerPerson];
   
   for (let minIndex = 0; minIndex < 3; minIndex++) {
@@ -47,18 +53,11 @@ const getMaxThreeCalories = (caloriesPerPerson) => {
   }
 
   return orderedCaloriesPerPerson;
+
 }
 
+const getMaxThreeCaloriesTotal = (caloriesForElves) => {
+  return getMaxThreeCalories(caloriesForElves).slice(0, 3).reduce((prev, next) => prev + next);
+}
 
-readFile(FILE_PATH, { encoding: 'utf8' }, (err, data) => {
-  if (err) throw err;
-  const dataList = data.split('\n').map((item) => parseInt(item));
-  const caloriesPerElf = getCaloriesPerElf(dataList);
-  console.log(caloriesPerElf);
-
-  console.log(getMaxCalories(caloriesPerElf).calories);
-
-  console.log(getMaxThreeCalories(caloriesPerElf));
-  console.log(getMaxThreeCalories(caloriesPerElf).slice(0, 3).reduce((prev, next) => prev + next));
-
-})
+getPuzzleInput(FILE_PATH, getCaloriesPerElf, [getMaxCaloriesNumber, getMaxThreeCaloriesTotal], true);
