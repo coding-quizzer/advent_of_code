@@ -26,13 +26,7 @@ const getBoxRow = (boxes) => {
 
 }
 
-const parseData = (data) => {
-  const boxes = [];
-  const instructions = [];
-  const index = 0;
-  for (let i = 0; i < data.length && data[i].trim()[0] === '['; i++) {
-    boxes.push(data[i]);
-  }
+const parseBoxes = (boxes) => {
 
   const initialBoxesArray = boxes.map(boxRow => getBoxRow(boxRow));
 
@@ -48,6 +42,31 @@ const parseData = (data) => {
 
     boxColumns.push(newColumn);
   }
+
+  return boxColumns;
+
+}
+
+const parseData = (data) => {
+  const boxes = [];
+  const instructions = [];
+  const index = 0;
+  let stage = 'boxes';
+  for (const row of data) {
+    const firstChar  = row.trim()[0];
+    
+    if (!firstChar || parseInt(firstChar) === 1) continue;
+
+    if (row.substring(0, 4) === "move") instructions.push(row);
+
+    if (firstChar === '[') boxes.push(row);
+  }
+
+  console.log(instructions);
+
+  const boxColumns = parseBoxes(boxes);
+
+ 
 
   console.log(boxColumns);
 }
