@@ -1,5 +1,5 @@
 const { readFile } = require('fs');
-FILE_PATH = './example_data.txt';
+FILE_PATH = './data.txt';
 
 const makeDataArray = (data) => {
   return data.split('\n');
