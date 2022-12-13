@@ -11,29 +11,44 @@ const parseData = (data) => {
 const findKnapsackDuplicates = (pouches) => {
 
   const knapsackItems = {};
-  let duplicates = [];
 
+  
   const [firstPouch, secondPouch] = pouches;
-
+  
   for (const item of firstPouch) {
     if (!knapsackItems[item]) {
       knapsackItems[item] = 1;
     }
   }
-
-  console.log(knapsackItems);
-
+  
+  const knapsackPocketItems = {};
+  
   for (const item of secondPouch) {
-    const itemPriority = findDuplicatePriority(item);
 
-    if (knapsackItems[item] && !duplicates.includes(itemPriority)) {
-      console.log("Item", item)
-      duplicates.push(itemPriority);
+    if (!knapsackPocketItems[item]) {
+      knapsackPocketItems[item] = 1;
     }
   }
 
-  return duplicates.reduce((prev, next) => prev + next);
+  const knapsackItemKeys = Object.keys(knapsackPocketItems);
+  for(const knapsackItemKey of knapsackItemKeys) {
+    let knapsackItem = knapsackItems[knapsackItemKey];
+    if (!knapsackItem) {
+      knapsackItem = 0;
+    }
 
+    knapsackItem++;
+
+    knapsackItems[knapsackItemKey] = knapsackItem;
+  }
+
+  console.log(knapsackItems);
+
+  const knapsackItemArray = Object.keys(knapsackItems);
+
+  console.log("Final Array", knapsackItemArray.filter(item => knapsackItems[item] === 2))
+  const duplicateItems =  knapsackItemArray.filter(item => knapsackItems[item] === 2);
+  return duplicateItems.map(item => findDuplicatePriority(item)).reduce((prev, next) => prev + next)
 }
 
 const findDuplicatePriority = item => {
