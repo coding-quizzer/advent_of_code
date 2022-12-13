@@ -1,13 +1,11 @@
 const { readFile } = require('fs');
 
-FILE_PATH = "./example_data.txt";
+FILE_PATH = "./data.txt";
 
 const getBoxRow = (boxes) => {
 
   const initialBoxesArray = [];
   let currentBox = "";
-
-  console.log("box row", boxes)
 
   for (let index in boxes) {
     const char = boxes[index];
@@ -124,15 +122,32 @@ const parseData = (data) => {
     if (firstChar === '[') boxes.push(row);
   }
 
-  console.log(instructions);
-
-  
-
   const boxColumns = parseBoxes(boxes);
 
-  parseInstructions(instructions);
+  const instructionsObject = parseInstructions(instructions);
 
-  console.log(boxColumns);
+  return { boxes: boxColumns, instructions: instructionsObject }
+}
+
+const moveBoxes = ({ boxes, instructions }) => {
+  for(let instruction of instructions) {
+    const { number, startIndex, endIndex } = instruction;
+    for (let i = 0; i < number; i++) {
+      boxes[endIndex - 1].push(boxes[startIndex - 1].pop());
+    }
+    console.log(boxes);
+  }
+  return boxes;
+}
+
+const getTopBoxes = (boxes) => {
+  let boxString = "";
+  for (box of boxes) {
+    const topBoxLetter = box.pop()[1];
+    boxString += topBoxLetter;
+  }
+
+  return boxString
 }
 
 readFile(FILE_PATH, { encoding: 'utf8' }, (error, data) => {
@@ -141,4 +156,8 @@ readFile(FILE_PATH, { encoding: 'utf8' }, (error, data) => {
   const lines = data.split('\n');
 
   const newData = parseData(lines);
+  console.log(newData);
+  const newBoxes = moveBoxes(newData);
+  const topBoxes = getTopBoxes(newBoxes);
+  console.log(topBoxes);
 })
