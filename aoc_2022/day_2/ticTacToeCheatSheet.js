@@ -63,14 +63,14 @@ const getWinScore = (playerScore, opponentScore) => {
   return 0;
 }
 
-const parseData = (data) => {
-  const lines = data.trim().split('\n');
+const parseData = (lines) => {
   
   const rounds = lines.map((line) => {
     if (!line) return;
     const [opponent, player] = line.split(' ');
     return { opponent, player }
   })
+  console.log(rounds);
   return rounds
 }
 
@@ -112,8 +112,8 @@ const getScore = (roundsList, playerElementScoringObject, opponentScoringObject,
 
 readFile(FILE_PATH, { encoding: 'utf8' }, (err, data) => {
   if (err) throw err;
-  const roundsList = parseData(data);
-  console.log(roundsList);
+  const lines = data.trim().split('\n');
+  const roundsList = parseData(lines);
   const elementScore = getScore(roundsList, playerElementScoringObject, opponentScoringObject, getScoreListElement);
   console.log("Element Score", elementScore);
   const winScore = getScore(roundsList, playerWinScoringObject, opponentScoringObject, getScoreListWin);
