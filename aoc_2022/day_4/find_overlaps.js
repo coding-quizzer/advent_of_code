@@ -46,13 +46,25 @@ const isContained = (range) => {
 }
 
 const getRangeContainedCount = (rangeList) => {
-  const containsList = rangeList.map(range => (isContained(range) ? 1 : 0));
+  const containedRanges = rangeList.filter(range => (isContained(range)));
 
-  return containsList.reduce((prev, next) => prev + next);
+  return containedRanges.length;
 }
+
+const hasOverlap = (range) => {
+  const [range1, range2] = range;
+  return !(range1[1] < range2[0] || range2[1] < range1[0])
+}
+
+const getRangeOverlapCount = (rangeList) => {
+  const overlapList = rangeList.filter((range) => hasOverlap(range))
+  return overlapList.length;
+}
+
 readFile(FILE_PATH, { encoding: 'utf-8' }, (error, data) => {
   if (error) throw error;
   const rangeList = parseInput(data);
   console.log(getRangeContainedCount(rangeList));
+  console.log(getRangeOverlapCount(rangeList));
 
 });
