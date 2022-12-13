@@ -7,7 +7,7 @@ const getBoxRow = (boxes) => {
   const initialBoxesArray = [];
   let currentBox = "";
 
-  console.log("First boxes row", boxes)
+  console.log("box row", boxes)
 
   for (let index in boxes) {
     const char = boxes[index];
@@ -47,11 +47,67 @@ const parseBoxes = (boxes) => {
 
 }
 
+const parseInstructions = (instructions) => {
+  for (const instruction of instructions) {
+    let partialWord = "";
+    let number = "";
+    let space = 0;
+    let mode = "word";
+    const commandObject = {};
+    console.log(instruction);
+    for(const char of instruction) {
+      console.log("char", char)
+
+      if(char === " ") space++;
+
+      if(/[a-z]/.test(char)) {
+        partialWord += char;
+        console.log('partial word', partialWord);
+        continue;
+      }
+
+      if (mode === 'word' && space === 1) {
+        mode = "number";
+        space = 0;
+      } //after move: space is 0 mode is number
+
+      if(/[0-9]/.test(char)) {
+        number += char;
+        console.log(number);
+        continue;
+      }
+
+      if(mode === "number" && space === 1) {
+       if (partialWord === "move") {
+         commandObject.number = parseInt(number);
+       }
+
+       if (partialWord === "from") {
+        commandObject.startIndex = parseInt(number);
+        mode = "word";
+       }
+
+       if (partialWord === "to") {
+        commandObject.endIndex = parseInt(number)
+       }
+
+       partialWord = "";
+       number = "";
+       mode = 'word';
+       space = 0;
+
+     }   
+
+    }
+    if (number) commandObject.endIndex = parseInt(number)
+    console.log(commandObject);
+  }
+}
+
 const parseData = (data) => {
   const boxes = [];
   const instructions = [];
-  const index = 0;
-  let stage = 'boxes';
+
   for (const row of data) {
     const firstChar  = row.trim()[0];
     
@@ -64,9 +120,11 @@ const parseData = (data) => {
 
   console.log(instructions);
 
+  
+
   const boxColumns = parseBoxes(boxes);
 
- 
+  parseInstructions(['move 1 from 8 to 4']);
 
   console.log(boxColumns);
 }
