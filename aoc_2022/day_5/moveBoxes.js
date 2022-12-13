@@ -47,61 +47,67 @@ const parseBoxes = (boxes) => {
 
 }
 
-const parseInstructions = (instructions) => {
-  for (const instruction of instructions) {
-    let partialWord = "";
-    let number = "";
-    let space = 0;
-    let mode = "word";
-    const commandObject = {};
-    console.log(instruction);
-    for(const char of instruction) {
-      console.log("char", char)
+const commandToObject = (command) => {
 
-      if(char === " ") space++;
+  let partialWord = "";
+  let number = "";
+  let space = 0;
+  let mode = "word";
+  const commandObject = {};
+  for(const char of command) {
 
-      if(/[a-z]/.test(char)) {
-        partialWord += char;
-        console.log('partial word', partialWord);
-        continue;
-      }
+    if(char === " ") space++;
 
-      if (mode === 'word' && space === 1) {
-        mode = "number";
-        space = 0;
-      } //after move: space is 0 mode is number
-
-      if(/[0-9]/.test(char)) {
-        number += char;
-        console.log(number);
-        continue;
-      }
-
-      if(mode === "number" && space === 1) {
-       if (partialWord === "move") {
-         commandObject.number = parseInt(number);
-       }
-
-       if (partialWord === "from") {
-        commandObject.startIndex = parseInt(number);
-        mode = "word";
-       }
-
-       if (partialWord === "to") {
-        commandObject.endIndex = parseInt(number)
-       }
-
-       partialWord = "";
-       number = "";
-       mode = 'word';
-       space = 0;
-
-     }   
-
+    if(/[a-z]/.test(char)) {
+      partialWord += char;
+      continue;
     }
-    if (number) commandObject.endIndex = parseInt(number)
-    console.log(commandObject);
+
+    if (mode === 'word' && space === 1) {
+      mode = "number";
+      space = 0;
+    }
+
+    if(/[0-9]/.test(char)) {
+      number += char;
+      continue;
+    }
+
+    if(mode === "number" && space === 1) {
+     if (partialWord === "move") {
+       commandObject.number = parseInt(number);
+     }
+
+     if (partialWord === "from") {
+      commandObject.startIndex = parseInt(number);
+      mode = "word";
+     }
+
+     if (partialWord === "to") {
+      commandObject.endIndex = parseInt(number)
+     }
+
+     partialWord = "";
+     number = "";
+     mode = 'word';
+     space = 0;
+
+   }   
+
   }
+  if (number) commandObject.endIndex = parseInt(number);
+  return commandObject;
+
+}
+
+const parseInstructions = (instructions) => {
+  const instructionsArray = [];
+  for (const instruction of instructions) {
+    const commandObject = commandToObject(instruction);
+    instructionsArray.push(commandObject);
+  }
+  console.log(instructionsArray);
+  return instructionsArray;
 }
 
 const parseData = (data) => {
@@ -124,7 +130,7 @@ const parseData = (data) => {
 
   const boxColumns = parseBoxes(boxes);
 
-  parseInstructions(['move 1 from 8 to 4']);
+  parseInstructions(instructions);
 
   console.log(boxColumns);
 }
