@@ -39,8 +39,20 @@ const parseInput = (data) => {
   return processedData;
 }
 
+
+const isContained = (range) => {
+  const [range1, range2] = range;
+  return ((range1[0] >= range2[0] && range1[1] <= range2[1]) || (range2[0] >= range1[0] && range2[1] <= range1[1]))
+}
+
+const getRangeContainedCount = (rangeList) => {
+  const containsList = rangeList.map(range => (isContained(range) ? 1 : 0));
+
+  return containsList.reduce((prev, next) => prev + next);
+}
 readFile(FILE_PATH, { encoding: 'utf-8' }, (error, data) => {
   if (error) throw error;
-  parseInput(data);
+  const rangeList = parseInput(data);
+  console.log(getRangeContainedCount(rangeList));
 
 });
