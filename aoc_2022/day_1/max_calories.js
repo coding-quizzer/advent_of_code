@@ -1,4 +1,3 @@
-const { readFile } = require("fs");
 const getPuzzleInput = require('../getInput');
 const FILE_PATH = './data.txt';
 
@@ -60,4 +59,4 @@ const getMaxThreeCaloriesTotal = (caloriesForElves) => {
   return getMaxThreeCalories(caloriesForElves).slice(0, 3).reduce((prev, next) => prev + next);
 }
 
-getPuzzleInput(FILE_PATH, getCaloriesPerElf, [getMaxCaloriesNumber, getMaxThreeCaloriesTotal], true);
+getPuzzleInput(FILE_PATH, getCaloriesPerElf, [getMaxCaloriesNumber, getMaxThreeCaloriesTotal]);
