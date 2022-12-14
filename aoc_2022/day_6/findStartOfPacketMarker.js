@@ -1,14 +1,45 @@
 const { readFile } = require('fs');
 
-const FILE_PATH = './example_data_1.txt';
+const FILE_PATH = './data.txt';
 
 const findMarker = (signal) => {
 
-  const window = [];
+  let startIndex = 0;
+  let markerFound = false;
 
-  
+  while(!markerFound) {
 
-  return signal;
+    const window = signal.slice(startIndex, startIndex + 4).split('');
+    const matchObject = {};
+    
+    
+    
+    for (const index in window) {
+      const intIndex = parseInt(index);
+      const char = window[intIndex];
+      if (matchObject[char] !== undefined) {
+        startIndex = matchObject[char] + 1;
+        console.log(startIndex);
+        break;
+      }
+      
+      matchObject[char] = (startIndex + intIndex);
+      
+      if(intIndex === 3) {
+        markerFound = true;
+      }
+
+    }
+    console.log("match object", matchObject);
+    console.log("Marker Found", markerFound);
+    
+    if(startIndex > (signal.length - 3)) throw new Error ("Signal marker not found");
+  }
+
+
+
+  console.log(signal.slice(startIndex, startIndex + 4).split(''));
+  return startIndex + 4;
 
 };
 
