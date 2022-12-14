@@ -2,16 +2,16 @@ const { readFile } = require('fs');
 
 const FILE_PATH = './data.txt';
 
-const findMarker = (signal) => {
+const findMarker = (signal, size) => {
 
   let startIndex = 0;
   let markerFound = false;
 
   while(!markerFound) {
 
-    const window = signal.slice(startIndex, startIndex + 4).split('');
+    const window = signal.slice(startIndex, startIndex + size).split('');
     const matchObject = {};
-    
+    // console.log("window", window)
     
     
     for (const index in window) {
@@ -19,27 +19,27 @@ const findMarker = (signal) => {
       const char = window[intIndex];
       if (matchObject[char] !== undefined) {
         startIndex = matchObject[char] + 1;
-        console.log(startIndex);
         break;
       }
       
       matchObject[char] = (startIndex + intIndex);
       
-      if(intIndex === 3) {
+      if(intIndex === size - 1) {
+        console.log("window", window);
         markerFound = true;
       }
 
     }
-    console.log("match object", matchObject);
-    console.log("Marker Found", markerFound);
+    // console.log("match object", matchObject);
+    // console.log("Marker Found", markerFound);
     
-    if(startIndex > (signal.length - 3)) throw new Error ("Signal marker not found");
+    if(startIndex > (signal.length - size + 1)) throw new Error ("Signal marker not found");
   }
 
 
 
-  console.log(signal.slice(startIndex, startIndex + 4).split(''));
-  return startIndex + 4;
+  console.log(signal.slice(startIndex, startIndex + size).split(''));
+  return startIndex + size;
 
 };
 
@@ -48,7 +48,9 @@ readFile(FILE_PATH, { encoding: 'utf-8'}, (error, data) => {
 
   const signalString = data;
 
-  console.log(findMarker(signalString));
+  console.log(findMarker(signalString, 4));
+
+  console.log(findMarker(signalString, 14));
 
 
 })
