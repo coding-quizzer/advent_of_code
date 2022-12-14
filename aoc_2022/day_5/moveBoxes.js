@@ -129,15 +129,40 @@ const parseData = (data) => {
   return { boxes: boxColumns, instructions: instructionsObject }
 }
 
-const moveBoxes = ({ boxes, instructions }) => {
-  for(let instruction of instructions) {
+const moveBoxesApart = ({ boxes, instructions }) => {
+  const newBoxes = boxes.map(box => [...box]);
+  const newInstructions = [...instructions]
+  for(let instruction of newInstructions) {
     const { number, startIndex, endIndex } = instruction;
     for (let i = 0; i < number; i++) {
-      boxes[endIndex - 1].push(boxes[startIndex - 1].pop());
+      newBoxes[endIndex - 1].push(newBoxes[startIndex - 1].pop());
     }
-    console.log(boxes);
+    console.log(newBoxes);
   }
-  return boxes;
+  return newBoxes;
+}
+
+const moveBoxesTogether = ({ boxes, instructions }) => {
+
+  const newBoxes = boxes.map(box => [...box]);
+  const newInstructions = [...instructions];
+
+
+  for(let instruction of newInstructions) {
+    const { number, startIndex, endIndex } = instruction;
+    const midStack = [];
+    for (let i = 0; i < number; i++) {
+      midStack.push(newBoxes[startIndex - 1].pop());
+    }
+    console.log("midStack", midStack);
+
+    while (midStack[0]) {
+      newBoxes[endIndex - 1].push(midStack.pop());
+    }
+    console.log(newBoxes);
+  }
+  return newBoxes;
+
 }
 
 const getTopBoxes = (boxes) => {
@@ -157,7 +182,12 @@ readFile(FILE_PATH, { encoding: 'utf8' }, (error, data) => {
 
   const newData = parseData(lines);
   console.log(newData);
-  const newBoxes = moveBoxes(newData);
-  const topBoxes = getTopBoxes(newBoxes);
-  console.log(topBoxes);
+  const newBoxes = moveBoxesApart(newData);
+  const reverseTopBoxes = getTopBoxes(newBoxes);
+  console.log(reverseTopBoxes);
+  const newOrderedBoxes = moveBoxesTogether(newData);
+  const orderedTopBoxes = getTopBoxes(newOrderedBoxes);
+  console.log(orderedTopBoxes);
+
+
 })
