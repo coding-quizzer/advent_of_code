@@ -107,6 +107,21 @@ const getSmallFilesTotal = (directories) => (
     .reduce((counter, directory) => counter + directory.size, 0)
 );
 
+const getSmallestDeleteCandidate = (directories, rootTotal) => {
+  const totalSpace = 70000000;
+  const spaceNeeded = 30000000;
+
+  const currentunusedSpace = totalSpace - rootTotal;
+  const spaceToFree = spaceNeeded - currentunusedSpace;
+  console.log("spaceToFree", spaceToFree);
+  const sortedDirectories = [...directories].sort((prevDirectory, nextDirectory) => (prevDirectory.size - nextDirectory.size));
+  for (const directory of sortedDirectories) {
+    if (directory.size >= spaceToFree) {
+      return directory;
+    }
+  }
+};
+
 const parseConsoleLines = (data) => {
   const consoleLines = [];
   let lineObject = {};
@@ -166,7 +181,10 @@ readFile(FILE_PATH, { encoding: "utf-8" }, (error, data) => {
 
   // Since the root contains all the directories, calculating the root size will also
   // calculate all the other sizes as well
-  console.log("root size", getDirectorySize(root));
+  const totalUsedSpace = getDirectorySize(root);
+  console.log("root size", totalUsedSpace);
   // console.log(directories);
   console.log(getSmallFilesTotal(directories));
+
+  console.log("smallest sufficient directory", getSmallestDeleteCandidate(directories, totalUsedSpace));
 });
