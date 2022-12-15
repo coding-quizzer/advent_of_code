@@ -14,7 +14,7 @@ const createFile = (currentFolder, fileObj) => {
   currentFolder.files[fileObj.name] = newFile;
 };
 
-const createFolder = (currentFolder, folderName) => {
+const createFolder = (currentFolder, folderName, directories) => {
   if (currentFolder.folders[folderName]) return;
 
   const newFolder = {
@@ -22,45 +22,71 @@ const createFolder = (currentFolder, folderName) => {
     folders: {
       "..": currentFolder,
     }
+
   };
-  currentFolder.folders[foldername] = newFolder;
+  directories.push(newFolder);
+  currentFolder.folders[folderName] = newFolder;
 };
 
-const evalCommand = (command, lineObject, currentFolder, root) => {
-  const commandArray = command.split(' ');
-  const commandName = commandArray[0];
-  if (commandName === "cd") {
-    console.log("command Array", commandArray);
-    const folderName = commandArray[1];
+const evalConsoleLines = (consoleLines, root) => {
+  // console.log(consoleLines);
+  let currentFolder = root;
+  let index = 0;
+  const directories = [root];
+  while (index < consoleLines.length) {
 
-    if (folderName === "/") {
-      return root;
+    console.log(index);
+    let lineObject = consoleLines[index];
+    if (lineObject.type === "command") {
+      console.log(lineObject.command);
+
+      if (lineObject.command === "cd") {
+        const folderName = lineObject.argument;
+        console.log("Folder", folderName);
+
+        if (folderName === "/") {
+          currentFolder = root;
+        } else {
+          currentFolder = currentFolder.folders[folderName];
+        }
+
+        index++;
+
+      }
+
+      if (lineObject.command === "ls") {
+        //console.log("ls");
+        index++;
+        while (consoleLines[index] && consoleLines[index].type !== "command") {
+          //console.log(consoleLines[index]);
+          lineObject = consoleLines[index];
+          if (lineObject.type === "folder") {
+            createFolder(currentFolder, lineObject.name, directories);
+          }
+
+          if (lineObject.type === "file") {
+            createFile(currentFolder, { name: lineObject.name, size: lineObject.size });
+          }
+          // console.log(index);
+          index++;
+
+        }
+      }
     }
 
-    return currentFolder.folders[folderName];
-
   }
-
-  if (commandName === "ls") {
-    console.log("ls");
-  }
-  lineObject.command = commandName;
-
-  return currentFolder;
+  return { root, directories };
 };
 
-const evalConsoleLines = (data, currentFolder, root) => {
+const parseConsoleLines = (data) => {
   const consoleLines = [];
   let lineObject = {};
-
-  const sampleLine = data[1];
 
   for (const line of data) {
 
     const commandWords = line.split(' ');
     // console.log('commandWords', commandWords);
     if (commandWords[0] === '$') {
-      lineObject.type = "command";
       lineObject = {
         type: "command",
         command: commandWords[1],
@@ -90,7 +116,7 @@ const evalConsoleLines = (data, currentFolder, root) => {
     consoleLines.push(lineObject);
   }
 
-  console.log(consoleLines);
+  return consoleLines;
 
 };
 
@@ -99,11 +125,14 @@ readFile(FILE_PATH, { encoding: "utf-8" }, (error, data) => {
 
   const root = {
     name: "root",
-    directories: {},
+    folders: {},
     files: {}
 
   };
   const dataArray = data.split("\n");
   let currentFolder = root;
-  evalConsoleLines(dataArray, currentFolder, root);
+  const commands = parseConsoleLines(dataArray);
+  const { directories } = evalConsoleLines(commands, root);
+  console.log(root);
+  console.log(directories);
 });
