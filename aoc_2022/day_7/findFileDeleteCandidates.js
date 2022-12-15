@@ -78,6 +78,26 @@ const evalConsoleLines = (consoleLines, root) => {
   return { root, directories };
 };
 
+const getDirectorySize = (currentDirectory) => {
+
+  if (currentDirectory.size) return currentDirectory.size;
+
+  const fileSizeSum = Object.values(currentDirectory.files).reduce(
+    (prev, next) => prev + next.size,
+    0);
+
+  const folderSizeSum = (
+    Object.entries(currentDirectory.folders)
+      .filter(([name, _properties]) => name !== "..")
+      .reduce(
+        (counter, objEntries) => counter + getDirectorySize(objEntries[1]),
+        0
+      ));
+
+  return fileSizeSum + folderSizeSum;
+
+};
+
 const parseConsoleLines = (data) => {
   const consoleLines = [];
   let lineObject = {};
@@ -106,9 +126,10 @@ const parseConsoleLines = (data) => {
     }
     else {
       const [size, name] = commandWords;
+      const intSize = parseInt(size);
       lineObject = {
         type: 'file',
-        size,
+        size: intSize,
         name,
       };
     }
@@ -135,4 +156,8 @@ readFile(FILE_PATH, { encoding: "utf-8" }, (error, data) => {
   const { directories } = evalConsoleLines(commands, root);
   console.log(root);
   console.log(directories);
+
+  console.log(root.folders.a.folders.e);
+
+  console.log("root size", getDirectorySize(root));
 });
