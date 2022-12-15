@@ -93,8 +93,10 @@ const getDirectorySize = (currentDirectory) => {
         (counter, objEntries) => counter + getDirectorySize(objEntries[1]),
         0
       ));
+  const totalSize = fileSizeSum + folderSizeSum;
+  currentDirectory.size = totalSize;
 
-  return fileSizeSum + folderSizeSum;
+  return totalSize;
 
 };
 
@@ -159,5 +161,8 @@ readFile(FILE_PATH, { encoding: "utf-8" }, (error, data) => {
 
   console.log(root.folders.a.folders.e);
 
+  // Since the root contains all the directories, calculating the root size will also
+  // calculate all the other sizes as well
   console.log("root size", getDirectorySize(root));
+  console.log(directories);
 });
