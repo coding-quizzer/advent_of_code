@@ -1,6 +1,6 @@
 const { readFile } = require("fs");
 
-const FILE_PATH = "./example_data.txt";
+const FILE_PATH = "./data.txt";
 /**
  * fileObj: {
  *  name,
@@ -8,7 +8,6 @@ const FILE_PATH = "./example_data.txt";
  * }
  */
 const createFile = (currentFolder, fileObj) => {
-  currentFolder.files = currentFolder.files || {};
   if (currentFolder.files[fileObj.name]) return;
   const newFile = { ...fileObj };
   currentFolder.files[fileObj.name] = newFile;
@@ -21,7 +20,8 @@ const createFolder = (currentFolder, folderName, directories) => {
     name: folderName,
     folders: {
       "..": currentFolder,
-    }
+    },
+    files: {}
 
   };
   directories.push(newFolder);
@@ -81,7 +81,8 @@ const evalConsoleLines = (consoleLines, root) => {
 const getDirectorySize = (currentDirectory) => {
 
   if (currentDirectory.size) return currentDirectory.size;
-
+  console.log('currentDirectory', currentDirectory);
+  console.log("currentDirectory files", currentDirectory.files);
   const fileSizeSum = Object.values(currentDirectory.files).reduce(
     (prev, next) => prev + next.size,
     0);
@@ -99,6 +100,12 @@ const getDirectorySize = (currentDirectory) => {
   return totalSize;
 
 };
+
+const getSmallFilesTotal = (directories) => (
+  directories
+    .filter(directory => directory.size < 100000)
+    .reduce((counter, directory) => counter + directory.size, 0)
+);
 
 const parseConsoleLines = (data) => {
   const consoleLines = [];
@@ -156,13 +163,10 @@ readFile(FILE_PATH, { encoding: "utf-8" }, (error, data) => {
   let currentFolder = root;
   const commands = parseConsoleLines(dataArray);
   const { directories } = evalConsoleLines(commands, root);
-  console.log(root);
-  console.log(directories);
-
-  console.log(root.folders.a.folders.e);
 
   // Since the root contains all the directories, calculating the root size will also
   // calculate all the other sizes as well
   console.log("root size", getDirectorySize(root));
-  console.log(directories);
+  // console.log(directories);
+  console.log(getSmallFilesTotal(directories));
 });
